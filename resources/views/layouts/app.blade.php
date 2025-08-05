@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-
     <title>Kalkulator Non-pots</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
     <style>
         :root {
             --telkom-primary: #e60000;
@@ -20,11 +20,11 @@
             color: white;
             text-align: center;
             font-size: 0.9rem;
-            padding: 0.5rem;
+            padding: 0.1rem;
         }
         .table td {
             vertical-align: middle;
-            padding: 0.5rem;
+            padding: 0.1rem;
         }
         .card, .btn, .form-control, .form-select {
             border-radius: 8px;
@@ -74,34 +74,44 @@
             background-color: rgba(255, 255, 255, 0.1);
             border-radius: 4px;
         }
+
+        /* Tambahan agar tabel tidak mepet */
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        .calculator-table {
+            min-width: 1200px; /* atau sesuaikan misalnya 1200px */
+        }
+
+        .calculator-table th,
+        .calculator-table td {
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+        }
     </style>
 </head>
 <body class="bg-light">
     <nav class="navbar navbar-expand-lg navbar-dark bg-telkom">
         <div class="container">
             <a class="navbar-brand fw-bold" href="{{ route('calculator.index') }}">
-
                 <i class="fas fa-calculator"></i> Kalkulator Non-pots
             </a>
-            {{-- 
-            <div class="navbar-nav ms-auto">
-                <a class="nav-link" href="{{ route('calculator.index') }}">
-                    <i class="fas fa-home"></i> Beranda
-                </a>
-            </div> 
-            --}}
         </div>
     </nav>
+
     <main class="py-4">
         <div class="container">
             @yield('content')
         </div>
     </main>
+
     <footer class="bg-dark text-white text-center py-3 mt-5">
         <div class="container">
             <p class="mb-0">&copy; {{ date('Y') }} Kalkulator Non-pots. All rights reserved.</p>
         </div>
     </footer>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     @stack('scripts')
 </body>

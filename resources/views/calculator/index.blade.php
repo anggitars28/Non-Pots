@@ -73,9 +73,11 @@
         </td>
         <td>
             <select name="items[0][otc_category]" class="form-select otc-select" required>
-                <option value="OTC KONTAN" data-price="0">OTC KONTAN</option>
+                <option value="FREE/MO" data-price="0">FREE/MO</option> 
                 <option value="AO DISCOUNT" data-price="150000">AO DISCOUNT</option>
                 <option value="AO NORMAL" data-price="500000">AO NORMAL</option>
+                <option value="OTC KONTAN" data-price="2500000">OTC KONTAN</option>
+                <option value="OTC PERBULAN" data-price="2500000">OTC PERBULAN</option>
             </select>
         </td>
         <td>
