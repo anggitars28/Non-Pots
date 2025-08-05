@@ -179,9 +179,14 @@
                 <option value="FREE/MO" data-price="0">FREE/MO</option>
                 <option value="AO DISCOUNT" data-price="150000">AO DISCOUNT</option>
                 <option value="AO NORMAL" data-price="500000">AO NORMAL</option>
+                <option value="OTC KONTAN" data-price="2500000">OTC KONTAN</option>
+                <option value="OTC PERBULAN" data-price="2500000">OTC PERBULAN</option>
             </select>
         </td>
         <td>
+            <input type="number" name="items[0][qty]" class="form-control qty-input" value="1" min="1" required>
+        </td>
+        </td>
             <span class="price-display">Rp 0</span>
             <input type="hidden" name="items[][price]" class="price-value" value="0">
         </td>
@@ -190,6 +195,11 @@
             <input type="hidden" name="items[][otc]" class="otc-value" value="0">
         </td>
         <td>
+
+            <!-- Diskon PRICE (%) -->
+    <td>
+        <input type="number" class="form-control disc-price-input" name="items[][disc_price]" value="0" min="0" max="100" style="width: 80px;">%
+    </td>
             <span class="price-with-ppn text-primary">Rp 0</span>
         </td>
         <td>
@@ -236,6 +246,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const priceDuration = priceWithPPN * duration;
         const finalPriceNoPPN = (price * duration) + otc; 
         const finalPrice = priceDuration + (otc * 1.11);
+        const discountedPrice = price * qty * (1 - discountPercentage);
         
         row.querySelector('.price-with-ppn').textContent = formatCurrency(priceWithPPN);
         row.querySelector('.price-duration').textContent = formatCurrency(priceDuration);
