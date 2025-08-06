@@ -3,11 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Kalkulator Non-pots</title>
+
+    <!-- CDN Styles -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
+
+    <!-- Custom Styling -->
     <style>
         :root {
             --telkom-primary: #e60000;
@@ -20,11 +23,11 @@
             color: white;
             text-align: center;
             font-size: 0.9rem;
-            padding: 0.1rem;
+            padding: 0.5rem;
         }
         .table td {
             vertical-align: middle;
-            padding: 0.1rem;
+            padding: 0.5rem;
         }
         .card, .btn, .form-control, .form-select {
             border-radius: 8px;
@@ -75,22 +78,30 @@
             border-radius: 4px;
         }
 
-        /* Tambahan agar tabel tidak mepet */
-        .table-wrapper {
-            overflow-x: auto;
+        /* Styling khusus Select2 agar cocok dengan Bootstrap */
+        .select2-container--default .select2-selection--single {
+            height: 38px;
+            padding: 6px 12px;
+            font-size: 14px;
+            border: 1px solid #ced4da;
         }
 
-        .calculator-table {
-            min-width: 1200px; /* atau sesuaikan misalnya 1200px */
+        .select2-selection__rendered {
+            line-height: 24px;
         }
 
-        .calculator-table th,
-        .calculator-table td {
-            padding: 0.5rem 1rem;
-            font-size: 0.85rem;
+        .select2-container {
+            width: 100% !important;
         }
     </style>
 </head>
+<!-- Select2 CSS -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+<!-- jQuery & Select2 -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
 <body class="bg-light">
     <nav class="navbar navbar-expand-lg navbar-dark bg-telkom">
         <div class="container">
@@ -112,7 +123,14 @@
         </div>
     </footer>
 
+    <!-- Script JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- jQuery & Select2 -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    <!-- Blade stack for additional page scripts -->
     @stack('scripts')
 </body>
 </html>
