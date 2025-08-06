@@ -46,52 +46,24 @@
                         </tr>
                     </thead>
                     <tbody id="calculatorRows">
-                        <tr class="calculator-row">
-                            <td>
-                                <select name="items[0][category_id]" class="form-select category-select" required>
-                                    <option value="">-</option>
-                                    @foreach($categories as $category)
-                                        <option value="{{ $category->category_id }}">{{ $category->nama_category }}</option>
-                                    @endforeach
-                                </select>
-                            </td>
-                            <td>
-                                <select name="items[0][product_id]" class="form-select product-select" required>
-                                    <option value="">-</option>
-                                    @foreach($products as $product)
-                                        <option value="{{ $product->id }}"
-                                            data-price="{{ $product->price }}"
-                                            data-discount="{{ $product->discount_price }}"
-                                            data-category="{{ $product->category_id }}">
-                                            {{ $product->nama_product }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </td>
-                            <td>
-                                <select name="items[0][otc_category]" class="form-select otc-select" required>
-                                    <option value="OTC KONTAN" data-price="0">OTC KONTAN</option>
-                                    <option value="AO DISCOUNT" data-price="150000">AO DISCOUNT</option>
-                                    <option value="AO NORMAL" data-price="500000">AO NORMAL</option>
-                                </select>
-                            </td>
-                            <td><input type="number" name="items[0][qty]" class="form-control qty-input" value="1" min="1" required></td>
-                            <td><span class="price-display">Rp 0</span><input type="hidden" name="items[0][price]" class="price-value" value="0"></td>
-                            <td><span class="otc-display">Rp 0</span><input type="hidden" name="items[0][otc]" class="otc-value" value="0"></td>
-                            <td><span class="discounted-price">Rp 0</span></td>
-                            <td><span class="discounted-otc">Rp 0</span></td>
-                            <td><span class="price-times-discount">Rp 0</span></td>
-                            <td><span class="otc-times-discount">Rp 0</span></td>
-                            <td><input type="number" name="items[0][duration]" class="form-control duration-input" min="1" value="1" required style="width: 80px;"></td>
-                            <td><span class="monthly-otc">Rp 0</span></td>
-                            <td><span class="monthly-price">Rp 0</span></td>
-                            <td><span class="monthly-price-ppn">Rp 0</span></td>
-                            <td><span class="yearly-price">Rp 0</span></td>
-                            <td><span class="final-price-ppn text-success">Rp 0</span></td>
-                            <td><button type="button" class="btn btn-danger btn-sm remove-row"><i class="fas fa-trash"></i> Hapus</button></td>
-                        </tr>
+                        <!-- baris pertama dimunculkan via JS -->
                     </tbody>
                 </table>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mt-4">
+                <button type="button" id="addRow" class="btn btn-success">
+                    <i class="fas fa-plus"></i> Tambah Baris
+                </button>
+
+                <div class="d-flex align-items-center">
+                    <span class="me-3"><strong>Total Keseluruhan: <span id="grandTotal" class="text-danger">Rp 0</span></strong></span>
+                    <button type="button" class="btn btn-secondary me-2" id="resetBtn">
+                        <i class="fas fa-undo"></i> Reset
+                    </button>
+                    <button type="button" class="btn btn-navy" id="printPdfBtn">
+                        <i class="fas fa-file-pdf"></i> Print PDF
+                    </button>
+                </div>
             </div>
         </form>
     </div>
@@ -100,40 +72,8 @@
 
 @push('scripts')
 <script>
-document.addEventListener('change', function(e) {
-    if (e.target.classList.contains('product-select')) {
-        const row = e.target.closest('.calculator-row');
-        const selected = e.target.selectedOptions[0];
-        const price = parseFloat(selected.dataset.price) || 0;
-        const discount = parseFloat(selected.dataset.discount) || 0;
-        row.querySelector('.price-value').value = price;
-        row.querySelector('.price-display').textContent = formatCurrency(price);
-        row.querySelector('.discounted-price').textContent = formatCurrency(discount);
-        row.querySelector('.price-times-discount').textContent = formatCurrency(price * discount);
-        updateRow(row);
-    }
-    if (e.target.classList.contains('otc-select')) {
-        const row = e.target.closest('.calculator-row');
-        const selected = e.target.selectedOptions[0];
-        const otcPrice = parseFloat(selected.dataset.price) || 0;
-        row.querySelector('.otc-value').value = otcPrice;
-        row.querySelector('.otc-display').textContent = formatCurrency(otcPrice);
-        row.querySelector('.otc-times-discount').textContent = formatCurrency(otcPrice * 1);
-        updateRow(row);
-    }
-    if (e.target.classList.contains('category-select')) {
-        const row = e.target.closest('.calculator-row');
-        const categoryId = e.target.value;
-        const productSelect = row.querySelector('.product-select');
-        productSelect.value = '';
-        Array.from(productSelect.options).forEach(option => {
-            option.style.display = option.dataset.category === categoryId || option.value === '' ? 'block' : 'none';
-        });
-        row.querySelector('.price-value').value = 0;
-        row.querySelector('.price-display').textContent = formatCurrency(0);
-        updateRow(row);
-    }
-});
+const categories = @json($categories);
+const products = @json($products);
 
 function formatCurrency(amount) {
     return 'Rp ' + new Intl.NumberFormat('id-ID').format(Math.round(amount));
@@ -149,9 +89,7 @@ function updateRow(row) {
     const otc = parseFloat(row.querySelector('.otc-value').value) || 0;
     const duration = parseInt(row.querySelector('.duration-input').value) || 1;
     const priceWithPPN = calculatePPN(price);
-    const priceDuration = priceWithPPN * duration;
-    const finalPriceNoPPN = (price * duration) + otc;
-    const finalPrice = priceDuration + (otc * 1.11);
+    const finalPrice = priceWithPPN * duration + (otc * 1.11);
     row.querySelector('.monthly-price').textContent = formatCurrency(price);
     row.querySelector('.monthly-price-ppn').textContent = formatCurrency(priceWithPPN);
     row.querySelector('.yearly-price').textContent = formatCurrency(price * 12);
@@ -164,14 +102,90 @@ function updateGrandTotal() {
         const price = parseFloat(row.querySelector('.price-value').value) || 0;
         const otc = parseFloat(row.querySelector('.otc-value').value) || 0;
         const duration = parseInt(row.querySelector('.duration-input').value) || 1;
-        if (price > 0) {
-            const priceWithPPN = calculatePPN(price);
-            const priceDuration = priceWithPPN * duration;
-            const finalPrice = priceDuration + (otc * 1.11);
-            total += finalPrice;
-        }
+        const priceWithPPN = calculatePPN(price);
+        const finalPrice = priceWithPPN * duration + (otc * 1.11);
+        total += finalPrice;
     });
     document.getElementById('grandTotal').textContent = formatCurrency(total);
 }
+
+function createRow(index) {
+    const categoryOptions = categories.map(c => `<option value="${c.category_id}">${c.nama_category}</option>`).join('');
+    const productOptions = products.map(p => `<option value="${p.id}" data-price="${p.price}" data-discount="${p.discount_price}" data-category="${p.category_id}">${p.nama_product}</option>`).join('');
+
+    return `
+<tr class="calculator-row">
+    <td>
+        <select name="items[${index}][category_id]" class="form-select category-select" required>
+            <option value="">-</option>${categoryOptions}
+        </select>
+    </td>
+    <td>
+        <select name="items[${index}][product_id]" class="form-select product-select" required>
+            <option value="">-</option>${productOptions}
+        </select>
+    </td>
+    <td>
+        <select name="items[${index}][otc_category]" class="form-select otc-select" required>
+            <option value="OTC KONTAN" data-price="0">OTC KONTAN</option>
+            <option value="OTC PERBULAN" data-price="0">OTC PERBULAN</option>
+        </select>
+    </td>
+    <td><input type="number" name="items[${index}][qty]" class="form-control qty-input" value="1" min="1" required></td>
+    <td><span class="price-display">Rp 0</span><input type="hidden" name="items[${index}][price]" class="price-value" value="0"></td>
+    <td><span class="otc-display">Rp 0</span><input type="hidden" name="items[${index}][otc]" class="otc-value" value="0"></td>
+    <td><span class="discounted-price">Rp 0</span></td>
+    <td><span class="discounted-otc">Rp 0</span></td>
+    <td><span class="price-times-discount">Rp 0</span></td>
+    <td><span class="otc-times-discount">Rp 0</span></td>
+    <td><input type="number" name="items[${index}][duration]" class="form-control duration-input" value="1" min="1" style="width: 80px;" required></td>
+    <td><span class="monthly-otc">Rp 0</span></td>
+    <td><span class="monthly-price">Rp 0</span></td>
+    <td><span class="monthly-price-ppn">Rp 0</span></td>
+    <td><span class="yearly-price">Rp 0</span></td>
+    <td><span class="final-price-ppn text-success">Rp 0</span></td>
+    <td><button type="button" class="btn btn-danger btn-sm remove-row"><i class="fas fa-trash"></i> Hapus</button></td>
+</tr>`;
+}
+
+// Tambah baris
+document.getElementById('addRow').addEventListener('click', () => {
+    const tbody = document.getElementById('calculatorRows');
+    const index = tbody.querySelectorAll('.calculator-row').length;
+    tbody.insertAdjacentHTML('beforeend', createRow(index));
+});
+
+// Hapus baris
+document.addEventListener('click', function(e) {
+    if (e.target.closest('.remove-row')) {
+        e.target.closest('.calculator-row').remove();
+        updateGrandTotal();
+    }
+});
+
+// Reaktivasi perubahan input
+document.addEventListener('change', function(e) {
+    if (e.target.closest('.calculator-row')) {
+        const row = e.target.closest('.calculator-row');
+        updateRow(row);
+        updateGrandTotal();
+    }
+
+    if (e.target.classList.contains('category-select')) {
+        const row = e.target.closest('.calculator-row');
+        const categoryId = e.target.value;
+        const productSelect = row.querySelector('.product-select');
+        productSelect.value = '';
+        Array.from(productSelect.options).forEach(option => {
+            option.style.display = option.dataset.category === categoryId || option.value === '' ? 'block' : 'none';
+        });
+    }
+});
+
+// Tambahkan satu baris default saat halaman pertama kali dimuat
+document.addEventListener('DOMContentLoaded', function () {
+    const tbody = document.getElementById('calculatorRows');
+    tbody.insertAdjacentHTML('beforeend', createRow(0));
+});
 </script>
 @endpush
